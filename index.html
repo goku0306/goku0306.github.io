@@ -1,5 +1,342 @@
-<html>
-<body>
-<h1> Hello Goku...</h1>
-</body>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gokul M | Portfolio</title>
+    <style>
+      :root {
+        font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        color: #eef2ff;
+        background: radial-gradient(circle at top, #312e81, #0f172a 42%, #020617);
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; min-height: 100vh; }
+      .page-shell { width: min(1100px, 92vw); margin: 1.5rem auto 3rem; display: grid; gap: 1.1rem; }
+      .card {
+        background: rgba(15, 23, 42, 0.76);
+        border: 1px solid rgba(129, 140, 248, 0.35);
+        border-radius: 18px;
+        padding: 1.2rem;
+        box-shadow: 0 20px 40px rgba(15, 23, 42, 0.35);
+        backdrop-filter: blur(4px);
+      }
+      h2 { margin: 0 0 .75rem; color: #c7d2fe; }
+
+      .main-carousel { position: relative; overflow: hidden; min-height: 240px; }
+      .slide {
+        position: absolute;
+        inset: 1.2rem;
+        opacity: 0;
+        transform: translateX(24px);
+        transition: 420ms ease;
+        pointer-events: none;
+      }
+      .slide.active { opacity: 1; transform: translateX(0); pointer-events: auto; }
+      .chip { display: inline-block; margin: 0 0 .65rem; padding: .4rem .8rem; border-radius: 999px; background: rgba(129,140,248,.2); border: 1px solid rgba(129,140,248,.45); }
+      .slide h1 { margin: .2rem 0; font-size: clamp(1.8rem, 3.8vw, 2.7rem); }
+      .muted { color: #cbd5e1; }
+      .carousel-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 220px; }
+      .btn {
+        background: rgba(99, 102, 241, .2);
+        color: #e0e7ff;
+        border: 1px solid rgba(129, 140, 248, .45);
+        border-radius: 999px;
+        padding: .35rem .75rem;
+        cursor: pointer;
+      }
+      .dots { display: flex; gap: .4rem; }
+      .dot { width: 9px; height: 9px; border-radius: 99px; border: 0; background: #64748b; cursor: pointer; }
+      .dot.active { background: #a5b4fc; }
+
+      .summary { line-height: 1.6; color: #dbeafe; }
+      .skills-grid, .footer-grid { display: grid; gap: .9rem; }
+      .skills-grid { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+      .footer-grid { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+      .skill-tile, .mini-project {
+        background: rgba(30,41,59,.7);
+        border: 1px solid rgba(148,163,184,.35);
+        border-radius: 12px;
+        padding: .9rem;
+      }
+
+      .languages-wrap { display: flex; gap: .6rem; flex-wrap: wrap; }
+      .lang-chip {
+        padding: .5rem .7rem;
+        border-radius: 999px;
+        background: rgba(129,140,248,.16);
+        border: 1px solid rgba(129,140,248,.35);
+      }
+
+      .scroll-reveal { opacity: 0; transform: translateY(26px); transition: opacity .55s ease, transform .55s ease; }
+      .scroll-reveal.visible { opacity: 1; transform: translateY(0); }
+
+      .project-carousel { display: grid; gap: .8rem; }
+      .project-main {
+        min-height: 180px;
+        transition: .35s ease;
+      }
+      .project-main h3 { margin: 0 0 .55rem; color: #dbeafe; }
+      .project-main ul { margin: 0; padding-left: 1.1rem; color: #d1d5db; line-height: 1.5; }
+      .tools { margin: .65rem 0 0; color: #cbd5e1; }
+
+      .mini-track {
+        display: flex;
+        gap: .7rem;
+        overflow-x: auto;
+        padding-bottom: .2rem;
+        scroll-snap-type: x mandatory;
+      }
+      .mini-project {
+        min-width: 210px;
+        cursor: pointer;
+        scroll-snap-align: start;
+        border-color: rgba(148,163,184,.2);
+      }
+      .mini-project.active { border-color: rgba(129, 140, 248, .75); background: rgba(67,56,202,.28); }
+      .mini-project h4 { margin: 0 0 .35rem; font-size: .95rem; }
+      .mini-project p { margin: 0; font-size: .82rem; color: #cbd5e1; }
+
+      .animate-up { opacity: 0; transform: translateY(24px); animation: rise 700ms cubic-bezier(.16,1,.3,1) forwards; }
+      .delay-1 { animation-delay: 140ms; } .delay-2 { animation-delay: 260ms; } .delay-3 { animation-delay: 380ms; }
+      @keyframes rise { to { opacity: 1; transform: translateY(0); } }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <script type="text/babel" data-presets="typescript,react">
+      type Skill = { category: string; items: string };
+      type Project = { title: string; points: string[]; tools: string };
+
+      const topSlides = [
+        {
+          chip: 'Software Engineer | Full Stack Developer | Power BI Developer',
+          title: 'GOKUL M',
+          subtitle: 'Chennai, India',
+          text: '3+ years delivering enterprise-grade full-stack applications and business intelligence solutions.',
+        },
+        {
+          chip: 'Core Expertise',
+          title: '.NET Core • FastAPI • React • Power BI',
+          subtitle: 'API, Analytics, Cloud Deployments',
+          text: 'Focused on scalable APIs, cloud-native architecture, and high-performance dashboards.',
+        },
+        {
+          chip: 'Business Impact',
+          title: 'Data-driven Engineering',
+          subtitle: 'Performance + Insight + Reliability',
+          text: 'Strong SDLC ownership with optimization, storytelling, and stakeholder-ready reporting.',
+        },
+      ];
+
+      const knownLanguages = ['C#', 'Python', 'TypeScript', 'JavaScript', 'Java', 'SQL'];
+
+      const technicalSkills: Skill[] = [
+        { category: 'Frontend', items: 'React, HTML5, CSS3, Bootstrap, Redux' },
+        { category: 'Backend & APIs', items: '.NET Core, ASP.NET Web API, FastAPI, REST, JWT, SOAP' },
+        { category: 'Business Intelligence', items: 'Power BI Desktop & Service, DAX, Power Query, RDLC Reports' },
+        { category: 'Databases', items: 'MS SQL Server, PostgreSQL, MySQL, MongoDB, MariaDB' },
+        { category: 'Cloud & DevOps', items: 'AWS (EC2, ECS, ECR, Lambda), Docker, CI/CD, GitHub Actions, Jenkins, Git' },
+        { category: 'Tools & Concepts', items: 'SDLC, Data Modeling, OOP, Microservices, MVC, Nginx, Swagger, Postman, VS Code' },
+      ];
+
+      const projects: Project[] = [
+        {
+          title: 'Parsable & Parsable Deviations Report',
+          points: [
+            'Designed enterprise-level Power BI dashboards to analyze parsable datasets and deviation trends.',
+            'Developed complex DAX measures for KPIs and variance analysis.',
+          ],
+          tools: 'Power BI, DAX, Power Query, MS SQL Server',
+        },
+        {
+          title: 'Product Line Report',
+          points: [
+            'Built interactive dashboards with drill-down and slicer-based analysis.',
+            'Enabled users to monitor operational KPIs and performance metrics.',
+          ],
+          tools: 'Power BI, DAX',
+        },
+        {
+          title: 'Mothra Quote Report',
+          points: [
+            'Developed multi-page quote analysis reports and deployment insights.',
+            'Designed scalable fact/dimension data models.',
+          ],
+          tools: 'Power BI, DAX, SQL',
+        },
+        {
+          title: 'Issue Tracking Report',
+          points: [
+            'Created structured table reports to track issues and resolution status.',
+            'Ensured consistency across reporting layers.',
+          ],
+          tools: 'Power BI',
+        },
+        {
+          title: 'E-Visa Platform',
+          points: [
+            'Developed FastAPI + PostgreSQL backend services.',
+            'Implemented dynamic React TypeScript frontend with JWT auth.',
+          ],
+          tools: 'FastAPI, React, TypeScript, PostgreSQL',
+        },
+        {
+          title: 'ERP Inventory & Analytics System',
+          points: [
+            'Built APIs and integrated Power BI inventory dashboards.',
+            'Designed optimized SQL queries and datasets.',
+          ],
+          tools: '.NET Core, Power BI, MS SQL Server, PostgreSQL',
+        },
+        {
+          title: 'Track & Trace (OPMS)',
+          points: [
+            'Implemented RFID-based audit/logistics solution with Android integration.',
+            'Developed APIs and dashboards for real-time tracking.',
+          ],
+          tools: '.NET Web API, React, Android Studio',
+        },
+      ];
+
+      const { useEffect, useState } = React;
+
+      const App = () => {
+        const [slideIndex, setSlideIndex] = useState(0);
+        const [projectIndex, setProjectIndex] = useState(0);
+
+        useEffect(() => {
+          const timer = setInterval(() => {
+            setSlideIndex((prev) => (prev + 1) % topSlides.length);
+          }, 4200);
+          return () => clearInterval(timer);
+        }, []);
+
+        useEffect(() => {
+          const nodes = document.querySelectorAll('.scroll-reveal');
+          const observer = new IntersectionObserver(
+            (entries) => {
+              entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                  entry.target.classList.add('visible');
+                }
+              });
+            },
+            { threshold: 0.2 }
+          );
+
+          nodes.forEach((node) => observer.observe(node));
+          return () => observer.disconnect();
+        }, []);
+
+        const project = projects[projectIndex];
+
+        return (
+          <main className="page-shell">
+            <section className="card main-carousel animate-up">
+              {topSlides.map((slide, idx) => (
+                <article className={`slide ${idx === slideIndex ? 'active' : ''}`} key={slide.title}>
+                  <p className="chip">{slide.chip}</p>
+                  <h1>{slide.title}</h1>
+                  <p className="muted">📍 {slide.subtitle}</p>
+                  <p className="summary">{slide.text}</p>
+                </article>
+              ))}
+              <div className="carousel-nav">
+                <button className="btn" onClick={() => setSlideIndex((slideIndex - 1 + topSlides.length) % topSlides.length)}>Prev</button>
+                <div className="dots">
+                  {topSlides.map((_, idx) => (
+                    <button
+                      key={idx}
+                      className={`dot ${idx === slideIndex ? 'active' : ''}`}
+                      onClick={() => setSlideIndex(idx)}
+                      aria-label={`Slide ${idx + 1}`}
+                    />
+                  ))}
+                </div>
+                <button className="btn" onClick={() => setSlideIndex((slideIndex + 1) % topSlides.length)}>Next</button>
+              </div>
+            </section>
+
+            <section className="card animate-up delay-1">
+              <h2>Professional Summary</h2>
+              <p className="summary">
+                Software Engineer with 3+ years of experience delivering enterprise-grade full-stack applications and business intelligence solutions.
+                Proven ability to design scalable APIs, cloud-native deployments, and data-driven dashboards with measurable business impact.
+              </p>
+            </section>
+
+            <section className="card scroll-reveal">
+              <h2>Known Languages</h2>
+              <div className="languages-wrap">
+                {knownLanguages.map((language) => <span className="lang-chip" key={language}>{language}</span>)}
+              </div>
+            </section>
+
+            <section className="card animate-up delay-2">
+              <h2>Technical Skills</h2>
+              <div className="skills-grid">
+                {technicalSkills.map((skill) => (
+                  <article className="skill-tile" key={skill.category}>
+                    <h3>{skill.category}</h3>
+                    <p>{skill.items}</p>
+                  </article>
+                ))}
+              </div>
+            </section>
+
+            <section className="card animate-up delay-3">
+              <h2>Professional Experience</h2>
+              <p className="muted">Software Developer / Power BI Developer • Third Eye Info Technology & ETek IT Solutions • June 2022 – Present</p>
+
+              <h2 style={{ marginTop: '.9rem' }}>Project Carousel</h2>
+              <div className="project-carousel">
+                <article className="mini-project project-main">
+                  <h3>{project.title}</h3>
+                  <ul>{project.points.map((point) => <li key={point}>{point}</li>)}</ul>
+                  <p className="tools"><strong>Tools:</strong> {project.tools}</p>
+                </article>
+
+                <div style={{ display: 'flex', gap: '.6rem' }}>
+                  <button className="btn" onClick={() => setProjectIndex((projectIndex - 1 + projects.length) % projects.length)}>Prev</button>
+                  <button className="btn" onClick={() => setProjectIndex((projectIndex + 1) % projects.length)}>Next</button>
+                </div>
+
+                <div className="mini-track">
+                  {projects.map((item, idx) => (
+                    <article
+                      key={item.title}
+                      className={`mini-project ${idx === projectIndex ? 'active' : ''}`}
+                      onClick={() => setProjectIndex(idx)}
+                    >
+                      <h4>{item.title}</h4>
+                      <p>{item.tools}</p>
+                    </article>
+                  ))}
+                </div>
+              </div>
+            </section>
+
+            <section className="card footer-grid scroll-reveal">
+              <article>
+                <h2>Education</h2>
+                <p>Bachelor of Science in Computer Science<br />Govt. Arts & Science College, Avinashi (2019 – 2022)</p>
+              </article>
+              <article>
+                <h2>Soft Skills</h2>
+                <p>Analytical thinking, Data storytelling, Problem-solving, Agile collaboration, Stakeholder communication</p>
+              </article>
+            </section>
+          </main>
+        );
+      };
+
+      ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
+  </body>
 </html>
