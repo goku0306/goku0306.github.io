@@ -1,5 +1,265 @@
-<html>
-<body>
-<h1> Hello Goku...</h1>
-</body>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gokul M | Portfolio</title>
+    <style>
+      :root {
+        --bg: #070b1a;
+        --panel: #10172b;
+        --panel-soft: #131e36;
+        --text: #e5e7eb;
+        --muted: #9ca3af;
+        --brand: #7c8cff;
+        --brand-soft: #a5b4fc;
+        --line: rgba(124, 140, 255, 0.26);
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; background: radial-gradient(circle at 15% -5%, #2c3272, var(--bg) 45%); color: var(--text); font-family: Inter, system-ui, -apple-system, Segoe UI, sans-serif; }
+      a { color: inherit; text-decoration: none; }
+
+      .container { width: min(1120px, 92vw); margin: 0 auto; }
+      .nav {
+        position: sticky; top: 0; z-index: 20; backdrop-filter: blur(8px);
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+        background: rgba(7,11,26,0.7);
+      }
+      .nav-inner { display: flex; justify-content: space-between; align-items: center; padding: .85rem 0; }
+      .logo { font-weight: 700; letter-spacing: .08em; }
+      .menu { display: flex; gap: 1rem; color: var(--muted); font-size: .92rem; }
+
+      .hero {
+        padding: 3.8rem 0 2.4rem;
+        display: grid;
+        grid-template-columns: 1.2fr .9fr;
+        gap: 1rem;
+      }
+      .hero-left { padding-right: .6rem; }
+      .pill { display: inline-block; border: 1px solid var(--line); border-radius: 999px; padding: .32rem .72rem; font-size: .84rem; color: var(--brand-soft); background: rgba(124,140,255,.1); }
+      h1 { font-size: clamp(2rem, 5vw, 3.3rem); line-height: 1.1; margin: .8rem 0 .4rem; }
+      .subtitle { color: #dbe1f8; font-size: 1.04rem; margin: 0 0 .8rem; }
+      .desc { color: var(--muted); line-height: 1.65; margin: 0; }
+      .hero-cta { margin-top: 1.2rem; display: flex; gap: .7rem; }
+      .btn { border: 1px solid var(--line); color: #dbe1ff; background: rgba(124,140,255,.13); border-radius: 12px; padding: .5rem .84rem; cursor: pointer; }
+      .btn.ghost { background: rgba(255,255,255,.04); }
+
+      .panel {
+        background: linear-gradient(165deg, rgba(16,23,43,.95), rgba(19,30,54,.88));
+        border: 1px solid rgba(255,255,255,0.06);
+        border-radius: 16px;
+        padding: 1rem;
+      }
+      .hero-card { min-height: 260px; position: relative; overflow: hidden; }
+      .slide { position: absolute; inset: 1rem; opacity: 0; transform: translateX(24px); transition: .45s ease; }
+      .slide.active { opacity: 1; transform: none; }
+      .kicker { color: var(--brand-soft); font-size: .86rem; margin: 0; }
+      .slide h3 { margin: .45rem 0; font-size: 1.25rem; }
+      .slide p { margin: 0; color: #c2cadb; line-height: 1.6; }
+      .slide-controls { position: absolute; left: 1rem; right: 1rem; bottom: .8rem; display: flex; justify-content: space-between; align-items: center; }
+      .dots { display: flex; gap: .35rem; }
+      .dot { width: 8px; height: 8px; border-radius: 10px; border: 0; background: #4b5563; cursor: pointer; }
+      .dot.active { background: var(--brand-soft); }
+
+      section { margin: .9rem 0; }
+      .grid-2 { display: grid; grid-template-columns: 1.2fr .8fr; gap: .9rem; }
+      .section-title { margin: 0 0 .72rem; font-size: 1.05rem; color: #d8e1ff; }
+
+      .languages { display: flex; flex-wrap: wrap; gap: .55rem; }
+      .lang { border: 1px solid var(--line); background: rgba(124,140,255,.11); color: #d7ddff; border-radius: 999px; padding: .42rem .68rem; font-size: .88rem; }
+
+      .skills { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: .72rem; }
+      .skill { padding: .8rem; border-radius: 12px; border: 1px solid rgba(255,255,255,.08); background: rgba(255,255,255,.02); }
+      .skill h4 { margin: 0 0 .35rem; font-size: .93rem; color: #c7d2fe; }
+      .skill p { margin: 0; color: var(--muted); font-size: .88rem; line-height: 1.5; }
+
+      .project-main h3 { margin: 0 0 .55rem; }
+      .project-main ul { margin: 0; padding-left: 1.05rem; color: #c5cee2; line-height: 1.55; }
+      .project-tools { color: var(--muted); margin: .6rem 0 0; font-size: .9rem; }
+      .project-mini-track { display: flex; gap: .62rem; overflow-x: auto; padding-bottom: .25rem; margin-top: .65rem; }
+      .mini {
+        min-width: 195px; border: 1px solid rgba(255,255,255,.09); border-radius: 11px; padding: .62rem; cursor: pointer;
+        background: rgba(255,255,255,.015);
+      }
+      .mini.active { border-color: var(--line); background: rgba(124,140,255,.14); }
+      .mini h5 { margin: 0 0 .25rem; font-size: .85rem; }
+      .mini p { margin: 0; color: var(--muted); font-size: .77rem; }
+
+      .timeline-item { border-left: 2px solid var(--line); padding-left: .75rem; margin: .6rem 0; }
+      .timeline-item h4 { margin: 0; }
+      .timeline-item p { margin: .25rem 0; color: var(--muted); }
+
+      .reveal { opacity: 0; transform: translateY(20px); transition: .55s ease; }
+      .reveal.visible { opacity: 1; transform: none; }
+
+      @media (max-width: 900px) {
+        .hero, .grid-2 { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <script type="text/babel" data-presets="typescript,react">
+      type Skill = { category: string; items: string };
+      type Project = { title: string; points: string[]; tools: string };
+
+      const heroSlides = [
+        { kicker: 'Role', title: 'Software Engineer | Full Stack Developer | Power BI Developer', body: '3+ years of enterprise application and analytics delivery across full SDLC.' },
+        { kicker: 'Core Stack', title: '.NET Core, FastAPI, React, Power BI', body: 'Scalable API design, data modeling, cloud deployments, and BI reporting excellence.' },
+        { kicker: 'Location', title: 'Chennai, India', body: 'Focused on business impact through performance optimization and data storytelling.' },
+      ];
+
+      const knownLanguages = ['C#', 'Python', 'TypeScript', 'JavaScript', 'Java', 'SQL'];
+
+      const technicalSkills: Skill[] = [
+        { category: 'Frontend', items: 'React, HTML5, CSS3, Bootstrap, Redux' },
+        { category: 'Backend & APIs', items: '.NET Core, ASP.NET Web API, FastAPI, REST, JWT, SOAP' },
+        { category: 'Business Intelligence', items: 'Power BI Desktop & Service, DAX, Power Query, RDLC Reports' },
+        { category: 'Databases', items: 'MS SQL Server, PostgreSQL, MySQL, MongoDB, MariaDB' },
+        { category: 'Cloud & DevOps', items: 'AWS (EC2, ECS, ECR, Lambda), Docker, CI/CD, GitHub Actions, Jenkins, Git' },
+        { category: 'Tools & Concepts', items: 'SDLC, Data Modeling, OOP, Microservices, MVC, Nginx, Swagger, Postman, VS Code' },
+      ];
+
+      const projects: Project[] = [
+        { title: 'Parsable & Parsable Deviations Report', points: ['Designed Power BI dashboards to analyze parsable datasets and deviation trends.', 'Developed DAX KPIs, variance metrics, and trend analysis.'], tools: 'Power BI, DAX, Power Query, MS SQL Server' },
+        { title: 'Product Line Report', points: ['Built interactive dashboards with drill-down and slicer-based analysis.', 'Helped business users monitor operational KPIs effectively.'], tools: 'Power BI, DAX' },
+        { title: 'Mothra Quote Report', points: ['Developed multi-page quote analysis and job deployment reports.', 'Modeled scalable fact/dimension structures.'], tools: 'Power BI, DAX, SQL' },
+        { title: 'Issue Tracking Report', points: ['Created structured issue tracking and resolution tables.', 'Ensured data consistency across layers.'], tools: 'Power BI' },
+        { title: 'E-Visa Platform', points: ['Built FastAPI + PostgreSQL backend services.', 'Implemented React TypeScript frontend with secure JWT workflows.'], tools: 'FastAPI, React, TypeScript, PostgreSQL' },
+        { title: 'ERP Inventory & Analytics System', points: ['Developed backend APIs and integrated Power BI dashboards.', 'Optimized SQL queries and reporting datasets.'], tools: '.NET Core, Power BI, MS SQL Server, PostgreSQL' },
+        { title: 'Track & Trace (OPMS)', points: ['Implemented RFID-based audit and logistics integration.', 'Delivered APIs and dashboards for real-time tracking.'], tools: '.NET Web API, React, Android Studio' },
+      ];
+
+      const { useEffect, useState } = React;
+
+      const App = () => {
+        const [heroIndex, setHeroIndex] = useState(0);
+        const [projectIndex, setProjectIndex] = useState(0);
+
+        useEffect(() => {
+          const timer = setInterval(() => setHeroIndex((prev) => (prev + 1) % heroSlides.length), 4200);
+          return () => clearInterval(timer);
+        }, []);
+
+        useEffect(() => {
+          const nodes = document.querySelectorAll('.reveal');
+          const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) entry.target.classList.add('visible');
+            });
+          }, { threshold: 0.15 });
+          nodes.forEach((node) => observer.observe(node));
+          return () => observer.disconnect();
+        }, []);
+
+        const project = projects[projectIndex];
+
+        return (
+          <>
+            <nav className="nav">
+              <div className="container nav-inner">
+                <div className="logo">GOKUL M</div>
+                <div className="menu">
+                  <a href="#about">About</a>
+                  <a href="#skills">Skills</a>
+                  <a href="#projects">Projects</a>
+                </div>
+              </div>
+            </nav>
+
+            <main className="container">
+              <section className="hero" id="about">
+                <div className="hero-left reveal">
+                  <span className="pill">Portfolio</span>
+                  <h1>Building robust products with engineering + analytics.</h1>
+                  <p className="subtitle">GOKUL M — Chennai, India</p>
+                  <p className="desc">Software Engineer with 3+ years delivering enterprise-grade full-stack applications and BI solutions. Strong in .NET Core, FastAPI, React, Power BI, DAX, and SQL. Proven in scalable APIs, cloud-native deployments, and decision-ready dashboards.</p>
+                  <div className="hero-cta">
+                    <button className="btn">Software Engineer</button>
+                    <button className="btn ghost">Power BI Developer</button>
+                  </div>
+                </div>
+
+                <div className="panel hero-card reveal">
+                  {heroSlides.map((slide, idx) => (
+                    <article key={slide.title} className={`slide ${idx === heroIndex ? 'active' : ''}`}>
+                      <p className="kicker">{slide.kicker}</p>
+                      <h3>{slide.title}</h3>
+                      <p>{slide.body}</p>
+                    </article>
+                  ))}
+                  <div className="slide-controls">
+                    <button className="btn" onClick={() => setHeroIndex((heroIndex - 1 + heroSlides.length) % heroSlides.length)}>Prev</button>
+                    <div className="dots">
+                      {heroSlides.map((_, idx) => <button key={idx} className={`dot ${idx === heroIndex ? 'active' : ''}`} onClick={() => setHeroIndex(idx)} aria-label={`Hero slide ${idx + 1}`} />)}
+                    </div>
+                    <button className="btn" onClick={() => setHeroIndex((heroIndex + 1) % heroSlides.length)}>Next</button>
+                  </div>
+                </div>
+              </section>
+
+              <section className="grid-2">
+                <article className="panel reveal">
+                  <h2 className="section-title">Known Languages (Scroll Animated)</h2>
+                  <div className="languages">{knownLanguages.map((item) => <span key={item} className="lang">{item}</span>)}</div>
+                </article>
+                <article className="panel reveal">
+                  <h2 className="section-title">Education</h2>
+                  <div className="timeline-item">
+                    <h4>Bachelor of Science in Computer Science</h4>
+                    <p>Govt. Arts & Science College, Avinashi (2019 – 2022)</p>
+                  </div>
+                  <h2 className="section-title" style={{ marginTop: '.8rem' }}>Soft Skills</h2>
+                  <p className="desc">Analytical thinking, Data storytelling, Problem-solving, Agile collaboration, Stakeholder communication</p>
+                </article>
+              </section>
+
+              <section className="panel reveal" id="skills">
+                <h2 className="section-title">Technical Skills</h2>
+                <div className="skills">
+                  {technicalSkills.map((skill) => (
+                    <article className="skill" key={skill.category}>
+                      <h4>{skill.category}</h4>
+                      <p>{skill.items}</p>
+                    </article>
+                  ))}
+                </div>
+              </section>
+
+              <section className="panel reveal" id="projects">
+                <h2 className="section-title">Professional Experience</h2>
+                <p className="desc">Software Developer / Power BI Developer — Third Eye Info Technology & ETek IT Solutions (June 2022 – Present)</p>
+
+                <h2 className="section-title" style={{ marginTop: '.9rem' }}>Project Carousel</h2>
+                <article className="project-main skill">
+                  <h3>{project.title}</h3>
+                  <ul>{project.points.map((point) => <li key={point}>{point}</li>)}</ul>
+                  <p className="project-tools"><strong>Tools:</strong> {project.tools}</p>
+                </article>
+                <div className="hero-cta" style={{ marginTop: '.7rem' }}>
+                  <button className="btn" onClick={() => setProjectIndex((projectIndex - 1 + projects.length) % projects.length)}>Prev</button>
+                  <button className="btn" onClick={() => setProjectIndex((projectIndex + 1) % projects.length)}>Next</button>
+                </div>
+                <div className="project-mini-track">
+                  {projects.map((item, idx) => (
+                    <article className={`mini ${idx === projectIndex ? 'active' : ''}`} key={item.title} onClick={() => setProjectIndex(idx)}>
+                      <h5>{item.title}</h5>
+                      <p>{item.tools}</p>
+                    </article>
+                  ))}
+                </div>
+              </section>
+            </main>
+          </>
+        );
+      };
+
+      ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
+  </body>
 </html>
